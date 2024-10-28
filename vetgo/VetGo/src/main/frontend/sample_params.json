@@ -1,0 +1,41 @@
+{
+    "user": {
+        "id": "f81ae024-ca85-448b-a756-ab047a4d8b36",
+        "firstName": "shiv",
+        "lastName": null,
+        "telephone": null,
+        "address": null,
+        "userAccount": {
+            "id": "287cf65f-dcd8-4921-ab2f-3c20f4d62745",
+            "username": "shiv",
+            "email": "shiv@gmail.com",
+            "password": "$2a$10$zd.FLuGt9ED9GgUEHI51f.WE3E8sxUnImy6Vm/0FXkMTDUTay3loC",
+            "averageRating": 0,
+            "numReviewed": 0,
+            "tags": {
+                "id": "96c1bd32-ae96-49de-9a5f-724df10f1b2f",
+                "excellentService": 0,
+                "greatConversation": 0,
+                "attentive": 0,
+                "punctual": 0,
+                "knowledgeable": 0,
+                "cleanTidy": 0
+            }
+        },
+        "petList": []
+    },
+    "location": {
+        "latitude": 42.0307812,
+        "longitude": -93.63191309999999
+    },
+    "pet": {
+        "pid": "6a1dd0a2-1763-4354-aced-d3597e1635d1",
+        "name": "dawg",
+        "petType": "DOG",
+        "fileLink": [],
+        "age": 1,
+        "weight": 2,
+        "height": 3,
+        "male": null
+    }
+}

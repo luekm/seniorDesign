@@ -1,0 +1,207 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = "mysql://root:216f690bf9cf2757@coms-402-010.class.las.iastate.edu:3306/vetgo_db"
+}
+
+model additional_pet_information {
+  additional_info_id  Bytes     @id @db.Binary(16)
+  medical_history     String?   @db.VarChar(255)
+  allergies           String?   @db.VarChar(255)
+  changes_in_behavior String?   @db.VarChar(255)
+  diet                String?   @db.VarChar(255)
+  medications         String?   @db.VarChar(255)
+  record_timestamp    DateTime? @db.DateTime(0)
+  vaccination_records String?   @db.VarChar(255)
+  pet_id              Bytes?    @db.Binary(16)
+  pet                 pet?      @relation(fields: [pet_id], references: [pid], onDelete: Restrict, onUpdate: Restrict, map: "FKih8x797nimxo5w55mw48xytr4")
+
+  @@index([pet_id], map: "FKih8x797nimxo5w55mw48xytr4")
+}
+
+model address {
+  id             Bytes    @id @db.Binary(16)
+  city           String   @db.VarChar(255)
+  state          String   @db.VarChar(255)
+  street_address String   @db.VarChar(255)
+  unit_number    String?  @db.VarChar(255)
+  zip            String   @db.VarChar(255)
+  owners         owners[]
+  vets           vets[]
+}
+
+model appointment {
+  aid            Bytes        @id @db.Binary(16)
+  description    String?      @db.VarChar(255)
+  latitude       Float?
+  longitude      Float?
+  status         String?      @db.VarChar(255)
+  time           String?      @db.VarChar(255)
+  pet_id         Bytes?       @db.Binary(16)
+  transaction_id Bytes?       @db.Binary(16)
+  vet_id         Bytes?       @db.Binary(16)
+  transaction    transaction? @relation(fields: [transaction_id], references: [tid], onDelete: Restrict, onUpdate: Restrict, map: "FK3ph8s1a6p90q76hedw26wfs1w")
+  pet            pet?         @relation(fields: [pet_id], references: [pid], onDelete: Restrict, onUpdate: Restrict, map: "FK8y0it8yrd322ps2jklm5f8e07")
+  vets           vets?        @relation(fields: [vet_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FKh8f0evrqxcjoipwghqf9wlt63")
+  review         review[]
+
+  @@index([transaction_id], map: "FK3ph8s1a6p90q76hedw26wfs1w")
+  @@index([pet_id], map: "FK8y0it8yrd322ps2jklm5f8e07")
+  @@index([vet_id], map: "FKh8f0evrqxcjoipwghqf9wlt63")
+}
+
+model owners {
+  id         Bytes    @id @db.Binary(16)
+  first_name String?  @db.VarChar(255)
+  last_name  String?  @db.VarChar(255)
+  telephone  String?  @db.VarChar(255)
+  address_id Bytes?   @db.Binary(16)
+  owner_user Bytes?   @db.Binary(16)
+  address    address? @relation(fields: [address_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK2yfd67s598u1jirrgyrkmf56")
+  users      users?   @relation(fields: [owner_user], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FKlblgeaukffsyt51l8c4bcgyjh")
+  pet        pet[]
+
+  @@index([address_id], map: "FK2yfd67s598u1jirrgyrkmf56")
+  @@index([owner_user], map: "FKlblgeaukffsyt51l8c4bcgyjh")
+}
+
+model pet {
+  pid                        Bytes                        @id @db.Binary(16)
+  age                        Int
+  height                     Int
+  is_male                    Int?                         @default(1)
+  name                       String?                      @db.VarChar(255)
+  pet_type                   Int?
+  weight                     Int
+  owner_id                   Bytes                        @db.Binary(16)
+  allergies                  String?                      @db.VarChar(255)
+  changes_in_behavior        String?                      @db.VarChar(255)
+  diet                       String?                      @db.VarChar(255)
+  medications                String?                      @db.VarChar(255)
+  previous_medical_history   Bytes?                       @db.VarBinary(255)
+  vaccination_records        String?                      @db.VarChar(255)
+  pet_breed                  String?                      @db.VarChar(45)
+  additional_pet_information additional_pet_information[]
+  appointment                appointment[]
+  owners                     owners                       @relation(fields: [owner_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "FKjjta8917e0444gmyva96vq7xo")
+  pet_file_link              pet_file_link[]              @ignore
+
+  @@index([owner_id], map: "FKjjta8917e0444gmyva96vq7xo")
+}
+
+model review {
+  id                 Bytes        @id @db.Binary(16)
+  description        String?      @db.VarChar(255)
+  rating             Float?
+  reviewee           Bytes?       @db.Binary(16)
+  reviewer           Bytes?       @db.Binary(16)
+  review_appointment Bytes?       @db.Binary(16)
+  review_tags        Bytes?       @db.Binary(16)
+  tag                tag?         @relation(fields: [review_tags], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FKlskxiys6q4nfbjdu0njo8il83")
+  appointment        appointment? @relation(fields: [review_appointment], references: [aid], onDelete: Restrict, onUpdate: Restrict, map: "FKm177xn00wecxgu4rgoj9etoqj")
+
+  @@index([review_tags], map: "FKlskxiys6q4nfbjdu0njo8il83")
+  @@index([review_appointment], map: "FKm177xn00wecxgu4rgoj9etoqj")
+}
+
+model role {
+  id        Bytes       @id @db.Binary(16)
+  name      String?     @db.VarChar(255)
+  user_role user_role[]
+}
+
+model specialties {
+  id              Bytes             @id @db.Binary(16)
+  name            String?           @db.VarChar(255)
+  vet_specialties vet_specialties[]
+}
+
+model tag {
+  id                 Bytes    @id @db.Binary(16)
+  attentive          Int
+  clean_tidy         Int
+  excellent_service  Int
+  great_conversation Int
+  knowledgeable      Int
+  punctual           Int
+  review             review[]
+  users              users[]
+}
+
+model transaction {
+  tid                Bytes         @id @db.Binary(16)
+  amount             Float?        @db.Float
+  card_number        String?       @db.VarChar(255)
+  name               String?       @db.VarChar(255)
+  receipt            String?       @db.VarChar(255)
+  transaction_status Boolean?      @db.Bit(1)
+  zip                String?       @db.VarChar(255)
+  appointment        appointment[]
+}
+
+model user_role {
+  user_id Bytes @db.Binary(16)
+  role_id Bytes @db.Binary(16)
+  role    role  @relation(fields: [role_id], references: [id], onUpdate: Restrict, map: "FKa68196081fvovjhkek5m97n3y")
+  users   users @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "FKj345gk1bovqvfame88rcx7yyx")
+
+  @@id([user_id, role_id])
+  @@index([role_id], map: "FKa68196081fvovjhkek5m97n3y")
+}
+
+model users {
+  id             Bytes       @id @db.Binary(16)
+  average_rating Float
+  email          String?     @db.VarChar(255)
+  num_reviewed   Int
+  password       String?     @db.VarChar(255)
+  username       String?     @db.VarChar(255)
+  user_tags      Bytes?      @db.Binary(16)
+  owners         owners[]
+  user_role      user_role[]
+  tag            tag?        @relation(fields: [user_tags], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK8y39po1hehcoja85biq9f4jft")
+  vets           vets[]
+
+  @@index([user_tags], map: "FK8y39po1hehcoja85biq9f4jft")
+}
+
+model vet_specialties {
+  vet_id       Bytes       @db.Binary(16)
+  specialty_id Bytes       @db.Binary(16)
+  specialties  specialties @relation(fields: [specialty_id], references: [id], onUpdate: Restrict, map: "FK35uiboyrpfn1bndrr5jorcj0m")
+  vets         vets        @relation(fields: [vet_id], references: [id], onUpdate: Restrict, map: "FKby1c0fbaa0byaifi63vt18sx9")
+
+  @@id([vet_id, specialty_id])
+  @@index([specialty_id], map: "FK35uiboyrpfn1bndrr5jorcj0m")
+}
+
+model vets {
+  id              Bytes             @id @db.Binary(16)
+  first_name      String?           @db.VarChar(255)
+  last_name       String?           @db.VarChar(255)
+  telephone       String?           @db.VarChar(255)
+  status          Boolean?          @db.Bit(1)
+  vet_license     String?           @db.VarChar(255)
+  address_id      Bytes?            @db.Binary(16)
+  vet_user        Bytes?            @db.Binary(16)
+  appointment     appointment[]
+  vet_specialties vet_specialties[]
+  address         address?          @relation(fields: [address_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK6amgt3b04uppojuwhhooi53h5")
+  users           users?            @relation(fields: [vet_user], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FKcpla5ncsrwxuk3703vq6ws84a")
+
+  @@index([address_id], map: "FK6amgt3b04uppojuwhhooi53h5")
+  @@index([vet_user], map: "FKcpla5ncsrwxuk3703vq6ws84a")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model pet_file_link {
+  pet_pid   Bytes   @db.Binary(16)
+  file_link String? @db.VarChar(255)
+  pet       pet     @relation(fields: [pet_pid], references: [pid], onUpdate: Restrict, map: "FKbn89ahcahc13qdtgva0idwefb")
+
+  @@index([pet_pid], map: "FKbn89ahcahc13qdtgva0idwefb")
+  @@ignore
+}
